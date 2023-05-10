@@ -1,3 +1,48 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+*{
+  font-family: 'Roboto', sans-serif;
+}
+
+.addSpot{
+  margin: 5px;
+  border-radius: 1rem;
+  line-height: 30px;
+  text-align: center;
+  cursor: pointer;
+  height: 40px;
+  font-size: large;
+  padding: 5px;
+  opacity: 0;
+  animation: ani 1.5s forwards;
+}
+
+.addSpot:hover{
+  border: 1px solid;
+  line-height: 28px;
+  padding: 4px;
+}
+
+@keyframes ani {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+.a{
+  margin: auto;
+  border-radius: 1rem;
+  line-height: 40px;
+  text-align: center;
+  cursor: pointer;
+  width: 25%;
+  height: 40px;
+  font-size: large;
+  border: 1px solid hidden;
+}
+
+.a:hover{
+  border: 1px solid;
+  line-height: 38px;
+}
