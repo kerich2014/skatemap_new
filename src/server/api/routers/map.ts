@@ -16,18 +16,20 @@ export const mapRouter = createTRPCRouter({
     }),
 
   getAll: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.placemarks.findMany()
+    const result = await ctx.prisma.placemarks.findMany()
+    return result
   }),
 
   sendPoints: publicProcedure.input(z.object({
     title: z.string(),
-    coordinates: z.string(),
+    coordinatesX: z.string(),
+    coordinatesY: z.string(),
     description: z.string(),
     photo: z.string()
     })).mutation(async ({ ctx, input }) => {
-     const {title, coordinates, description, photo} = input 
+     const {title, coordinatesX, coordinatesY, description, photo} = input 
       
-      const result = await ctx.prisma.placemarks.create({data: {title, coordinates, description, photo}})
+      const result = await ctx.prisma.placemarks.create({data: {title, coordinatesX, coordinatesY, description, photo}})
       
       return result
   }),

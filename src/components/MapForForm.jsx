@@ -1,5 +1,5 @@
 import React from "react";
-import { YMaps, Map, ObjectManager} from "@pbe/react-yandex-maps";
+import { YMaps, Map, SearchControl} from "@pbe/react-yandex-maps";
 
 const mapState = {center: [59.939098, 30.315868], zoom: 10};
 const mapStyle = {
@@ -85,7 +85,10 @@ export default function MapForm() {
           onClick={onMapClick}
           state={mapState}
           style={mapStyle}
-        />
+        >
+          <SearchControl/>
+        </Map>
+        
       </YMaps>
      {/* <h1 className="border-2 border-black">Coords: {localStorage.getItem('coords')}</h1> */}
     </div>

@@ -46,3 +46,70 @@
   border: 1px solid;
   line-height: 38px;
 }
+
+.modal {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.5s;
+}
+
+.modal.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal__content {
+  padding: 20px;
+  border-radius: 1rem;
+  background-color: white;
+  width: 70vw;
+  height: 80vh;
+  min-width: 70vw;
+  min-height: 80vh;
+}
+
+.a:hover {
+  border: 1px solid;
+  line-height: 38px;
+}
+
+.dropzone {
+  @apply flex items-start h-28 overflow-hidden rounded-lg p-0.5 text-center;
+}
+
+.drag_drop_wrapper {
+  @apply flex h-24 aspect-square flex-col items-center justify-center rounded-lg border-2 border-green-200 text-center;
+}
+
+.preview_wrapper {
+  @apply items-center overflow-hidden rounded-lg p-3;
+}
+
+.preview_img_box {
+  @apply relative mx-auto h-28 w-28 rounded-lg;
+}
+
+.preview_link_container {
+  @apply mt-4 flex h-12 w-full items-center justify-between rounded-lg border p-1;
+}
+
+.preview_copy_button {
+  @apply rounded bg-blue-500 py-2 px-4 font-thin text-white transition duration-300 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200;
+}
+
+.progress_wrapper {
+  @apply w-20 rounded p-3;
+}
+
+.baloon{
+  @apply w-10 h-10
+}

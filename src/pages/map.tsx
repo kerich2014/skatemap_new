@@ -1,100 +1,43 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, useCallback } from "react";
 import YaMap from "../components/YaMap";
 import Modal from "../components/modal/Modal";
 import MapForm from "../components/MapForForm";
 import { api } from "skatemap_new/utils/api";
 import Link from 'next/link'
-import { Placemarks } from "@prisma/client";
 import { NextPage } from "next";
+import initFirebase from "../lib/firebaseInit";
+import { useDropzone } from "react-dropzone";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import UploadProgress from "skatemap_new/components/uploadProgress";
+import UploadPreview from "skatemap_new/components/uploadPreview";
+
+initFirebase();
+
+const storage = getStorage();
+
+const storageRef = ref(storage, new Date().toISOString());
+
+type Image = {
+  imageFile: Blob;
+};
 
 const Map: NextPage = () => {
 
+  let [progress, setProgress] = useState<number>(0);
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   const [modalActive, setModalActive] = useState(false)
-  
- 
-  // const points1 = [
-  //   {
-  //     id: 1,
-  //     coordinates: [59.836172, 30.164347],
-  //     title: "Скейт-парк у речки",
-  //     description: "Скейтпарк от компании FK-Ramps. Год постройки: 2023",
-  //     photo:
-  //       "https://cdnstatic.rg.ru/uploads/images/2022/08/29/1_dji_0143_402.jpg",
-  //   },
-  //   {
-  //     id: "2",
-  //     coordinates: [55.831903, 37.411961],
-  //     title: "Пристань Метеоров",
-  //   },
-  //   {
-  //     id: "3",
-  //     coordinates: [55.763338, 37.565466],
-  //     title: "Парк Ваккасалми",
-  //   },
-  // ];
-
-  // console.log(JSON.stringify(points1, undefined, 4))
-
-  // const [points, setPoints] = useState([]);
-
-  //  const [loading, setLoading] = useState(true)
-
-// useEffect(() => {
-//   const url = "http://localhost:3001/api/placemarks";
-
-//   const fetchData = async () => {
-//     try {
-//       const response = await fetch(url, {method: "GET"});
-//       if (!response.ok) {
-//         throw new Error(`HTTP error! status: ${response.status}`);
-//       }
-//       const json = await response.json();
-//       if (Array.isArray(json)) {
-//         const newPoints = json.map(point => {
-//           const coords = point.coordinates.slice(1, -1).split(',').map(coord => parseFloat(coord.trim()));
-//           const newId = point.id.toString();
-//           return { ...point, coordinates: coords, id: newId };
-//         });
-//         setPoints(newPoints);
-//       } else {
-//         throw new Error(`Invalid JSON received from server.`);
-//       }
-//     } catch (error) {
-//       console.error("An error occurred while fetching data:", error);
-//       setPoints([]);
-//     }
-//   };
-//   fetchData();
-//   setLoading(false)
-// }, []);
-
-// console.log(JSON.stringify(points, undefined, 4))
-
-// function sendPoints(url, data) {
-//   // Default options are marked with *
-//   console.log(data)
-//   fetch(url, {
-//     method: 'POST', // *GET, POST, PUT, DELETE, etc.
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify(data) // body data type must match "Content-Type" header
-//   })
-// }
-
-// console.table(points)
-
-const {data: points, isLoading} = api.map.getAll.useQuery()
-const {mutate} = api.map.sendPoints.useMutation()
 
 
-  const formData = {
-    mail: String,
-    name: String,
-    description: String,
-    photo: File,
-    coordinates: Array,
-  }
+  const {data: points, isLoading, refetch} = api.map.getAll.useQuery()
+  const {mutate} = api.map.sendPoints.useMutation()
 
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -117,24 +60,68 @@ const {mutate} = api.map.sendPoints.useMutation()
   const sendFunc = () => {
 
     setModalActive(false);
-    // formData.mail = email;
-    // formData.name = name;
-    // formData.description = description;
-    // formData.photo = photo;
-    // formData.coordinates = localStorage.getItem('coords');
+
     mutate({
-      coordinates: "[" + localStorage.getItem('coords') + "]",
+      coordinatesX: localStorage.getItem('coords')?.split(",")?.at(0) as string ,
+      coordinatesY: localStorage.getItem('coords')?.split(",")?.at(1) as string ,
       title: name.toString(),
       description: description.toString(),
-      photo: photo.toString(),
+      photo: imageUrl,
     })
 
     setEmail('');
     setName('');
     setDescription('');
     setPhoto('');
-    // console.log(formData)
+
+    refetch()
   }
+
+  const uploadImage = async ({ imageFile }: Image) => {
+    try {
+      setLoading(true);
+
+      const uploadTask = uploadBytesResumable(storageRef, imageFile);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setProgress(progress);
+        },
+        (error) => {
+          console.log(error.message);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setImageUrl(downloadURL);
+            setLoading(false);
+            setSuccess(true);
+          });
+        }
+      );
+    } catch (e: any) {
+      console.log(e.message);
+      setLoading(false);
+    }
+  };
+
+  const onDrop = useCallback((acceptedFiles: any[]) => {
+    // Upload files to storage
+    const file = acceptedFiles[0];
+    uploadImage({ imageFile: file });
+  }, []);
+  
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+    accept: {
+      "image/png": [".png", ".jpg", ".jpeg"],
+    },
+    maxFiles: 1,
+    noClick: true,
+    noKeyboard: true,
+    onDrop,
+  });
 
 return (
     <>
@@ -154,7 +141,8 @@ return (
       </nav>
       <div className="w-[96%] m-auto">
         <button className='addSpot' onClick={() => setModalActive(true)}>Добавить спот</button>
-        {points && <YaMap points={points}/>}
+        {/* <>{!isLoading && JSON.stringify(points)}</> */}
+        {!isLoading && points ? <YaMap points={points} />: null}
       </div>
       <Modal active={modalActive} setActive={setModalActive}>
         <div className="flex flex-start items-center justify-center">
@@ -162,18 +150,52 @@ return (
             <MapForm/>
           </div>
           <div className="flex flex-col items-center w-1/2">
-            <h1 className="text-3xl">Заполните форму</h1>
-            <h2 className="text-xl mt-3">Введите вашу почту:</h2>
-            <input id="email" value={email} onChange={(e) => emailHandler(e)} className="border-2 border-gray-800 rounded-md p-1 mt-3 w-2/3"></input>
-            <h2 className="text-xl mt-3">Введите название спота:</h2>
-            <input id="spotName" value={name} onChange={(e) => nameHandler(e)} className="border-2 border-gray-800 rounded-md p-1 mt-3 w-2/3"></input>
-            <h2 className="text-xl mt-3">Введите описание спота:</h2>
-            <textarea id="spotDesc" value={description} onChange={(e) => descriptionHandler(e)} className="border-2 border-gray-800 rounded-md p-1 mt-3 w-2/3 h-30 resize-none"></textarea>
-            <h2 className="text-xl mt-3">Добавьте фото:</h2>
-            <input type='file' value={photo} onChange={photoHandler} className="p-1 mt-[3%] w-2/3"></input>
-            <button 
-              className="border-2 border-gray-800 flex items-center justify-center rounded-md p-1 mt-[5%] w-1/3"
-              onClick={() =>sendFunc()}>Отправить</button>
+            <h2 className=" text-lg mt-3">Введите вашу почту:</h2>
+            <input id="email" value={email} onChange={(e) => emailHandler(e)} className="border-2 border-gray-800 rounded-md p-0.5 mt-3 w-2/3"></input>
+            <h2 className="text-lg mt-3">Введите название спота:</h2>
+            <input id="spotName" value={name} onChange={(e) => nameHandler(e)} className="border-2 border-gray-800 rounded-md p-0.5 mt-3 w-2/3"></input>
+            <h2 className="text-lg mt-3">Введите описание спота:</h2>
+            <textarea id="spotDesc" value={description} onChange={(e) => descriptionHandler(e)} className="border-2 border-gray-800 rounded-md p-0.5 mt-3 w-2/3 h-30 resize-none"></textarea>
+            <h2 className="text-lg mt-3">Добавьте фото:</h2>
+            
+            <>
+              <div>
+                {!success && (
+                  <div
+                    className={` ${
+                      loading ? "hidden" : ""
+                    } flex w-full justify-center`}
+                  >
+                    <div className="dropzone">
+                      <div {...getRootProps()} className="drag_drop_wrapper">
+                        <input hidden {...getInputProps()} />
+
+                        {isDragActive ? (
+                          <p>Перетащите фото сюда</p>
+                        ) : (
+                          <>
+                            <p>Перетащите фото сюда</p>
+                          </>
+                        )}
+                      </div>
+                      <p className="mt-9 m-5">или</p>
+                      <div className="flex p-1 w-28 justify-center mt-7 ">
+                        <button className="border-2 border-black hover:border-gray-200 rounded-lg" onClick={open}>выберете файл</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {loading && <UploadProgress progress={progress} />}
+              
+              {success && <UploadPreview imageUrl={imageUrl} />}
+              
+              
+            </>
+            {!loading && <button 
+              className="border-2 border-gray-800 hover:border-gray-200 flex items-center justify-center rounded-md p-1 mt-[5%] w-1/3"
+              onClick={() =>sendFunc()}>Отправить</button> }
           </div>
         </div>
     </Modal>
