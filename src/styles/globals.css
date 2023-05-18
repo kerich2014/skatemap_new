@@ -51,6 +51,8 @@
   height: 100vh;
   width: 100vw;
   position: fixed;
+  min-width: 602px;
+  min-height: 629px;
   top: 0;
   left: 0;
   display: flex;
@@ -87,7 +89,7 @@
 }
 
 .drag_drop_wrapper {
-  @apply flex h-24 aspect-square flex-col items-center justify-center rounded-lg border-2 border-green-200 text-center;
+  @apply flex h-24 p-1 aspect-square flex-col items-center justify-center border-2 border-dashed rounded-lg  border-gray-300 text-center;
 }
 
 .preview_wrapper {
@@ -102,14 +104,6 @@
   @apply mt-4 flex h-12 w-full items-center justify-between rounded-lg border p-1;
 }
 
-.preview_copy_button {
-  @apply rounded bg-blue-500 py-2 px-4 font-thin text-white transition duration-300 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200;
-}
-
 .progress_wrapper {
   @apply w-20 rounded p-3;
-}
-
-.baloon{
-  @apply w-10 h-10
 }

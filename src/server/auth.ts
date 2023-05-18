@@ -8,6 +8,7 @@ import DiscordProvider from "next-auth/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "skatemap_new/env.mjs";
 import { prisma } from "skatemap_new/server/db";
+import Email, { EmailProvider } from "next-auth/providers/email";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -47,10 +48,18 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
+    Email({
+      server:{
+        host: process.env.EMAIL_SERVER || 'https://localhost:3000',
+        port: 587,
+        user: 'apikey',
+        pass: process.env.EMAIL_PASSWORD || '',
+      },
+      from: process.env.EMAIL_FROM || 'default@default.com',
+      ...(process.env.NODE_ENV != 'production' ?{sendVerificationRequest({url}) {
+        console.log('login link', url)
+      }}:{})
+    })
     /**
      * ...add more providers here.
      *

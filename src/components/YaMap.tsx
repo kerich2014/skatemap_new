@@ -1,12 +1,17 @@
-import React from "react";
-import { YMaps, Map, ObjectManager, SearchControl} from "@pbe/react-yandex-maps";
+import React, { use, useState } from "react";
+import { YMaps, Map, ObjectManager, SearchControl, Placemark, Button} from "@pbe/react-yandex-maps";
 import { Placemarks } from "@prisma/client";
+import { any, array } from "zod";
+import { api } from "skatemap_new/utils/api";
 
 type pointsType = {
   points: Placemarks[]
 }
 
 export default function YaMap({points}: pointsType ) {
+
+  const [selectedPoint, setSelectedPoint] = useState(points[0])
+  const {mutate: deleteMutation} = api.map.deletePoint.useMutation()
   
   const mapStyle = {
     position: "relative",
@@ -37,17 +42,18 @@ export default function YaMap({points}: pointsType ) {
           preset: 'islands#icon',
           iconColor: 'red',
         },
+          cick: () => {setSelectedPoint(point), console.log(selectedPoint)},
       };
     })
   };
-
   // console.log(JSON.stringify(collection, undefined, 4))
 
   return (
     <YMaps
-      query={{ apikey: "1a15248c-004a-4364-8c06-4c1e617f3000", lang: "RU" }}
+      query={{ apikey: "1a15248c-004a-4364-8c06-4c1e617f3000", lang: "en_RU" }}
     >
       <div>
+        {/* <button className='addSpot' onClick={() => {deleteMutation(selectedPoint?.id ?? 0)}}>Удалить спот</button> */}
         <Map
           style={{position: "relative",
           left: 0,
@@ -62,11 +68,44 @@ export default function YaMap({points}: pointsType ) {
               clusterize: true,
               gridSize: 32,
             }}
-            defaultFeatures={collection}
+            // defaultFeatures={collection}
             modules={[
               "objectManager.addon.objectsBalloon",
-            ]}/>
-            <SearchControl/>
+            ]}
+            />
+            {points.map((point, index) => (
+              <Placemark 
+                key={index} 
+                geometry={[point.coordinatesX, point.coordinatesY]} 
+                onClick={() => {setSelectedPoint(point), console.log(selectedPoint)}}
+                properties={
+                  {
+                    balloonContentHeader:
+                    `<h2>${point.title}</h2>`,
+                    balloonContentBody:
+                    `<p>${point.description}</p> <img src= '${point.photo}'>`
+                  }
+                }
+                options={
+                  {
+                      preset: 'islands#icon',
+                      iconColor: 'red',
+                  }
+                }
+              />
+            ))}
+            <Button 
+              data={{
+                title: 'Удалить',
+                content: 'Удалить спот'
+              }}
+              options={{
+                selectOnClick: false,
+                maxWidth: 200,
+              }}
+              onClick={() => {deleteMutation(selectedPoint?.id ?? 0), alert('Спот удален!')}}
+            />
+            <SearchControl/>  
         </Map>
       </div>
     </YMaps>

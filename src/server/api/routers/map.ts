@@ -34,6 +34,15 @@ export const mapRouter = createTRPCRouter({
       return result
   }),
 
+  deletePoint: publicProcedure
+  .input(z.number())
+  .mutation(async ({ctx, input}) => {
+    return ctx.prisma.placemarks.delete({
+      where: {
+        id: input
+      }
+    })
+  }),
 
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
