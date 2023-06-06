@@ -88,8 +88,16 @@
   @apply flex items-start h-28 overflow-hidden rounded-lg p-0.5 text-center;
 }
 
+.dropzone2 {
+  @apply flex items-start h-40 overflow-hidden rounded-lg p-0.5 text-center;
+}
+
 .drag_drop_wrapper {
   @apply flex h-24 p-1 aspect-square flex-col items-center justify-center border-2 border-dashed rounded-lg  border-gray-300 text-center;
+}
+
+.drag_drop_wrapper2 {
+  @apply flex h-36 p-1 cursor-pointer aspect-square flex-col items-center justify-center border-2 border-dashed rounded-lg hover:border-solid  border-gray-300 text-center;
 }
 
 .preview_wrapper {

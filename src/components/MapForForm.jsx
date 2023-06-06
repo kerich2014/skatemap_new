@@ -15,9 +15,11 @@ export default function MapForm() {
   const [ymaps, setYmaps] = React.useState(null);
   const placemarkRef = React.useRef(null);
   const mapRef = React.useRef(null);
+  // @ts-ignore
   const [address, setAddress] = React.useState("");
 
-  const createPlacemark = (coords) => {
+  const createPlacemark = (/** @type {any} */ coords) => {
+    // @ts-ignore
     return new ymaps.Placemark(
       coords,
       {
@@ -30,9 +32,11 @@ export default function MapForm() {
     );
   };
 
-  const getAddress = (coords) => {
+  const getAddress = (/** @type {any} */ coords) => {
+    // @ts-ignore
     placemarkRef.current.properties.set("iconCaption", "loading..");
-    ymaps.geocode(coords).then((res) => {
+    // @ts-ignore
+    ymaps.geocode(coords).then((/** @type {{ geoObjects: { get: (arg0: number) => any; }; }} */ res) => {
       const firstGeoObject = res.geoObjects.get(0);
   
       const localities = firstGeoObject.getLocalities();
@@ -49,23 +53,28 @@ export default function MapForm() {
   
       setAddress(newAddress);
   
+      // @ts-ignore
       placemarkRef.current.properties.set({
         iconCaption: newAddress,
         balloonContent: firstGeoObject.getAddressLine()
       });
-    }).catch((error) => {
+    }).catch((/** @type {any} */ error) => {
       console.log(error);
     });
   };
 
-  const onMapClick = (e) => {
+  const onMapClick = (/** @type {{ get: (arg0: string) => any; }} */ e) => {
     const coords = e.get("coords");
     if (placemarkRef.current) {
+      // @ts-ignore
       placemarkRef.current.geometry.setCoordinates(coords);
     } else {
       placemarkRef.current = createPlacemark(coords);
+      // @ts-ignore
       mapRef.current.geoObjects.add(placemarkRef.current);
+      // @ts-ignore
       placemarkRef.current.events.add("dragend", function () {
+        // @ts-ignore
         getAddress(placemarkRef.current.geometry.getCoordinates());
       });
     }
@@ -80,7 +89,9 @@ export default function MapForm() {
       <YMaps query={{ apikey: "1a15248c-004a-4364-8c06-4c1e617f3000" }}>
         <Map
           modules={["Placemark", "geocode", "geoObject.addon.balloon"]}
+          // @ts-ignore
           instanceRef={mapRef}
+          // @ts-ignore
           onLoad={(instance) => setYmaps(instance)}
           onClick={onMapClick}
           state={mapState}

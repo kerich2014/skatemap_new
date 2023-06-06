@@ -9,6 +9,8 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "skatemap_new/env.mjs";
 import { prisma } from "skatemap_new/server/db";
 import Email, { EmailProvider } from "next-auth/providers/email";
+import { Role } from "@prisma/client";
+import { string } from "zod";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -20,9 +22,12 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      role: string;
       // ...other properties
-      // role: UserRole;
     } & DefaultSession["user"];
+    role: {
+      id: string;
+    }
   }
 
   // interface User {

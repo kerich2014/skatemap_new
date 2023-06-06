@@ -1,6 +1,7 @@
 import { createTRPCRouter } from "skatemap_new/server/api/trpc";
 import { exampleRouter } from "skatemap_new/server/api/routers/example";
 import { mapRouter } from "skatemap_new/server/api/routers/map";
+import { userRouter } from "./routers/user";
 
 /**
  * This is the primary router for your server.
@@ -10,6 +11,7 @@ import { mapRouter } from "skatemap_new/server/api/routers/map";
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
   map: mapRouter,
+  user: userRouter,
 });
 
 // export type definition of API

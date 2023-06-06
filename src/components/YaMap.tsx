@@ -3,6 +3,7 @@ import { YMaps, Map, ObjectManager, SearchControl, Placemark, Button} from "@pbe
 import { Placemarks } from "@prisma/client";
 import { any, array } from "zod";
 import { api } from "skatemap_new/utils/api";
+import { useSession } from "next-auth/react";
 
 type pointsType = {
   points: Placemarks[]
@@ -47,10 +48,11 @@ export default function YaMap({points}: pointsType ) {
     })
   };
   // console.log(JSON.stringify(collection, undefined, 4))
-
+  const session = useSession()
+  const user = api.user.getById.useQuery({id: session.data?.user.id as string})
   return (
     <YMaps
-      query={{ apikey: "1a15248c-004a-4364-8c06-4c1e617f3000", lang: "en_RU" }}
+      query={{ apikey: "1a15248c-004a-4364-8c06-4c1e617f3000", lang: "ru_RU" }}
     >
       <div>
         {/* <button className='addSpot' onClick={() => {deleteMutation(selectedPoint?.id ?? 0)}}>Удалить спот</button> */}
@@ -94,7 +96,8 @@ export default function YaMap({points}: pointsType ) {
                 }
               />
             ))}
-            <Button 
+            
+            {user.data?.role == 'admin' && (<Button
               data={{
                 title: 'Удалить',
                 content: 'Удалить спот'
@@ -104,7 +107,7 @@ export default function YaMap({points}: pointsType ) {
                 maxWidth: 200,
               }}
               onClick={() => {deleteMutation(selectedPoint?.id ?? 0), alert('Спот удален!')}}
-            />
+            />)}
             <SearchControl/>  
         </Map>
       </div>
