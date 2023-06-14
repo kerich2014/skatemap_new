@@ -2,9 +2,12 @@ import React from "react";
 import Link from "next/link";
 import { NextPage } from "next";
 import { useSession } from "next-auth/react";
+import { api } from "skatemap_new/utils/api";
+import { date } from "zod";
 
  const School: NextPage = () => {
-  const {data:session} = useSession()
+  const {data: session} = useSession()
+  const {data: videos} = api.video.getAll.useQuery()
   
 
     return (
@@ -20,7 +23,7 @@ import { useSession } from "next-auth/react";
             <a className="a">Правила скейтпарков</a>
         </nav>
         <div>
-            
+            <h1></h1>
         </div>
       </>
     );

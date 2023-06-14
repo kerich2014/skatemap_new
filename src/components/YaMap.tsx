@@ -11,7 +11,7 @@ type pointsType = {
 
 export default function YaMap({points}: pointsType ) {
 
-  const [selectedPoint, setSelectedPoint] = useState(points[0])
+  const [selectedPoint, setSelectedPoint] = useState(points[-1])
   const {mutate: deleteMutation} = api.map.deletePoint.useMutation()
   
   const mapStyle = {
@@ -47,6 +47,15 @@ export default function YaMap({points}: pointsType ) {
       };
     })
   };
+  const deletePointFunc = () => {
+    if(selectedPoint == points[-1]){
+      alert('Выберите метку и повторите попытку')
+    }
+    else{
+      deleteMutation(selectedPoint!.id)
+      alert('Метка успешно удалена')
+    }
+  }
   // console.log(JSON.stringify(collection, undefined, 4))
   const session = useSession()
   const user = api.user.getById.useQuery({id: session.data?.user.id as string})
@@ -106,7 +115,7 @@ export default function YaMap({points}: pointsType ) {
                 selectOnClick: false,
                 maxWidth: 200,
               }}
-              onClick={() => {deleteMutation(selectedPoint?.id ?? 0), alert('Спот удален!')}}
+              onClick={() => {deletePointFunc()}}
             />)}
             <SearchControl/>  
         </Map>

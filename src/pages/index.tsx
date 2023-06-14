@@ -43,42 +43,34 @@ const Map: NextPage = () => {
   
   const {mutate} = api.map.sendPoints.useMutation()
 
-  const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [photo, setPhoto] = useState('');
 
-  const emailHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value)
-  }
   const nameHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value)
   }
   const descriptionHandler = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.target.value)
   }
-  const photoHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setPhoto(e.target.value)
-  }
 
   const sendFunc = () => {
-
-    setModalActive(false);
-
-    mutate({
-      coordinatesX: localStorage.getItem('coords')?.split(",")?.at(0) as string ,
-      coordinatesY: localStorage.getItem('coords')?.split(",")?.at(1) as string ,
-      title: name.toString(),
-      description: description.toString(),
-      photo: imageUrl,
-    })
-
-    setEmail('');
-    setName('');
-    setDescription('');
-    setPhoto('');
-
-    refetch()
+    if(name != '' && description != '' && imageUrl != ''){
+      setModalActive(false);
+      mutate({
+        coordinatesX: localStorage.getItem('coords')?.split(",")?.at(0) as string ,
+        coordinatesY: localStorage.getItem('coords')?.split(",")?.at(1) as string ,
+        title: name.toString(),
+        description: description.toString(),
+        photo: imageUrl,
+      })
+  
+      setName('');
+      setDescription('');
+  
+      refetch()
+    }
+    else
+    alert('Проверьте данные и повторите попытку')
   }
 
   const uploadImage = async ({ imageFile }: Image) => {
@@ -132,11 +124,6 @@ const Map: NextPage = () => {
   const AuthShowcase: React.FC = () => {
     const { data: sessionData } = useSession();
   
-    const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-      undefined, // no input
-      { enabled: sessionData?.user !== undefined },
-    );
-  
     return (
         <button
           className="absolute top-[4%] right-[7%] border-2 border-white rounded-full bg-white/10 px-10 py-3 no-underline transition hover:border-black"
@@ -160,7 +147,7 @@ return (
       <nav className="flex items-center m-[2%]">
           <Link className="a" href = {`/`}>Карта спотов</Link>
           {session?.user && (<Link className="a" href = {`/school`}>Школа трюков</Link>)}
-          {session?.user && (<a className="a">Блог</a>)}
+          {session?.user && (<Link className="a" href = {`/blog`}>Блог</Link>)}
           <a className="a">Правила скейтпарков</a>
       </nav>
       <div className="w-[96%] m-auto">
@@ -175,8 +162,6 @@ return (
             <MapForm/>
           </div>
           <div className="flex flex-col items-center w-1/2">
-            <h2 className=" text-lg mt-3">Введите вашу почту:</h2>
-            <input id="email" value={email} onChange={(e) => emailHandler(e)} className="border-2 border-gray-800 rounded-md p-0.5 mt-3 w-2/3"></input>
             <h2 className="text-lg mt-3">Введите название спота:</h2>
             <input id="spotName" value={name} onChange={(e) => nameHandler(e)} className="border-2 border-gray-800 rounded-md p-0.5 mt-3 w-2/3"></input>
             <h2 className="text-lg mt-3">Введите описание спота:</h2>

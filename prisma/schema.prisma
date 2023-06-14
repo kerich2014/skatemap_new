@@ -60,6 +60,8 @@ model User {
   roleId        String?   @default("user")
   role          Role?     @relation(fields: [roleId], references: [id])
   lvl           Int?      @default(1)
+  blog          Blog[]
+  video         Videos[]
 }
 
 model Role {
@@ -82,6 +84,22 @@ model Placemarks {
   title       String
   description String
   photo       String
+}
+
+model Blog {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  photo       String
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id])
+}
+
+model Videos {
+  id          Int    @id @default(autoincrement())
+  video       String
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id])
 }
 
 
