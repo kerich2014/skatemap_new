@@ -87,11 +87,12 @@ model Placemarks {
 }
 
 model Blog {
-  id          Int    @id @default(autoincrement())
+  id          String     @id @default(cuid())
   title       String
   description String
   photo       String
   userId      String?
+  date        DateTime @default(now())
   user        User?     @relation(fields: [userId], references: [id])
 }
 

@@ -93,6 +93,7 @@ const uploadImage = async ({ imageFile }: Image) => {
         title: name.toString(),
         description: description.toString(),
         photo: imageUrl,
+        userId: session?.user.id!
       })
   
       setName('');
@@ -101,6 +102,8 @@ const uploadImage = async ({ imageFile }: Image) => {
     else
     alert('Проверьте данные и повторите попытку')
   }
+  const user = api.user.getById.useQuery({id: session?.user.id as string})
+  console.log(user.data?.role)
   
 
     return (
@@ -115,7 +118,7 @@ const uploadImage = async ({ imageFile }: Image) => {
             <a className="a">Блог</a>
             <a className="a">Правила скейтпарков</a>
         </nav>
-        <button className='addState' onClick={() => {setModalActive(true)}}>Создать статью</button>
+        {(user.data?.role == 'expert' || user.data?.role == 'admin') && (<button className='addState' onClick={() => {setModalActive(true)}}>Создать статью</button>)}
         <Modal active={modalActive} setActive={setModalActive}>
             <div className="flex">
             <div className="flex flex-col m-3 items-center w-1/3">
@@ -159,21 +162,23 @@ const uploadImage = async ({ imageFile }: Image) => {
                 className="border-2 border-gray-800 hover:border-gray-200 flex items-center justify-center rounded-md p-1 mt-[30%] w-full"
                 onClick={()=>sendFunc()}>Отправить</button> }
                 </div>
-                <div className="flex flex-col items-center w-2/3 m-3">
+                <div className="flex flex-col items-center w-2/3 ml-3 m-3">
                     <h2 className="text-lg mt-3">Введите текст статьи:</h2>
                     <textarea value={description} onChange={(e) => descriptionHandler(e)} className="border-2 border-gray-800 rounded-md p-0.5 mt-3 w-full h-96 resize-none"></textarea>
                 </div>
               </div>
         </Modal>
         <div className="m-auto flex flex-col items-center h-[500px] w-[80%] overflow-hidden overflow-y-scroll">
-                {blog.data?.map((item) => (
-                    <div className="flex flex-row items-center border-2 p-3 w-[80%] min-h-[350px] m-5 border-gray-800 rounded-3xl">
+                {blog.data?.map((item, i) => (
+                    <Link className="p-0 w-[80%] h-[350px]" href={`/blogs/${item.id}`}>
+                    <div key={i} className="flex flex-row items-center border-2 p-3 w-[100%] min-h-[350px] m-5 border-gray-800 rounded-3xl">
                     <img className="w-[40%] h-72 rounded-xl" src={item.photo}></img>
-                    <div className="flex flex-col items-center h-72 w-[50%]">
+                    <div className="flex flex-col items-center ml-10 h-72 w-[50%]">
                         <h1 className=" text-2xl font-bold">{item.title}</h1>
-                        <div>{item.description}</div>
+                        <div className=" text-center">{item.description}</div>
                     </div>
                     </div>
+                    </Link>
                 ))}
         </div>
       </>

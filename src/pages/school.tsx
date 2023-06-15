@@ -19,7 +19,7 @@ import { date } from "zod";
         <nav className="flex items-center m-[2%]">
             <Link className="a" href = {`/`}>Карта спотов</Link>
             <Link className="a" href = {`/school`}>Школа трюков</Link>
-            <a className="a">Блог</a>
+            <Link className="a" href = {`/blog`}>Блог</Link>
             <a className="a">Правила скейтпарков</a>
         </nav>
         <div>
