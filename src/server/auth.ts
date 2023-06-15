@@ -55,8 +55,8 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     MailRuProvider({
-      clientId: process.env.MAILRU_CLIENT_ID,
-      clientSecret: process.env.MAILRU_CLIENT_SECRET
+      clientId: env.MAILRU_CLIENT_ID,
+      clientSecret: env.MAILRU_SECRET,
     })
     /**
      * ...add more providers here.
