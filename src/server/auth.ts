@@ -63,6 +63,15 @@ export const authOptions: NextAuthOptions = {
       from: process.env.EMAIL_FROM || 'default@default.com',
       ...(process.env.NODE_ENV != 'production' ?{sendVerificationRequest({url}) {
         console.log('login link', url)
+        fetch(env.NEXTAUTH_URL + "/api/sendgrid", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            link: url,
+          }),
+        });
       }}:{})
     })
     /**
