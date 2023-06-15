@@ -11,6 +11,7 @@ import { prisma } from "skatemap_new/server/db";
 import Email, { EmailProvider } from "next-auth/providers/email";
 import { Role } from "@prisma/client";
 import { string } from "zod";
+import MailRuProvider from "next-auth/providers/mailru";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -53,26 +54,9 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    Email({
-      server:{
-        host: process.env.EMAIL_SERVER || 'https://localhost:3000',
-        port: 587,
-        user: 'apikey',
-        pass: process.env.EMAIL_PASSWORD || '',
-      },
-      from: process.env.EMAIL_FROM || 'default@default.com',
-      ...(process.env.NODE_ENV != 'production' ?{sendVerificationRequest({url}) {
-        console.log('login link', url)
-        fetch(env.NEXTAUTH_URL + "/api/sendgrid", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            link: url,
-          }),
-        });
-      }}:{})
+    MailRuProvider({
+      clientId: process.env.MAILRU_CLIENT_ID,
+      clientSecret: process.env.MAILRU_CLIENT_SECRET
     })
     /**
      * ...add more providers here.

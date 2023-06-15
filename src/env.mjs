@@ -9,6 +9,8 @@ export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url(),
     SENDGRID_API_KEY: z.string(),
+    MAILRU_CLIENT_ID: z.string(),
+    MAILRU_SECRET: z.string(),
     NODE_ENV: z.enum(["development", "test", "production"]),
     NEXTAUTH_SECRET:
       process.env.NODE_ENV === "production"
@@ -43,5 +45,8 @@ export const env = createEnv({
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+    MAILRU_CLIENT_ID: process.env.MAILRU_CLIENT_ID,
+    MAILRU_SECRET: process.env.MAILRU_SECRET,
+    
   },
 });
