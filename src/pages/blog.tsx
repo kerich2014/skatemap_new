@@ -25,6 +25,7 @@ const Blog: NextPage = () => {
 const {data: session} = useSession()
 const blog = api.blog.getAll.useQuery()
 const [modalActive, setModalActive] = useState(false)
+const [modalActive2, setModalActive2] = useState(false)
 const [name, setName] = useState('');
 const [description, setDescription] = useState('');
 let [progress, setProgress] = useState<number>(0);
@@ -32,6 +33,7 @@ const [imageUrl, setImageUrl] = useState<string>("");
 const [loading, setLoading] = useState(false);
 const [success, setSuccess] = useState(false);
 const {mutate} = api.blog.sendPost.useMutation()
+const [index, setIndex] = useState<number>(0)
 
 const nameHandler = (e: ChangeEvent<HTMLInputElement>) => {
   setName(e.target.value)
@@ -170,15 +172,24 @@ const uploadImage = async ({ imageFile }: Image) => {
         </Modal>
         <div className="m-auto flex flex-col items-center h-[500px] w-[80%] overflow-hidden overflow-y-scroll">
                 {blog.data?.map((item, i) => (
-                    <Link className="p-0 w-[80%] h-[350px]" href={`/blogs/${item.id}`}>
-                    <div key={i} className="flex flex-row items-center border-2 p-3 w-[100%] min-h-[350px] m-5 border-gray-800 rounded-3xl">
-                    <img className="w-[40%] h-72 rounded-xl" src={item.photo}></img>
-                    <div className="flex flex-col items-center ml-10 h-72 w-[50%]">
+                  <>
+                    <Modal active={modalActive2} setActive={setModalActive2}>
+                      <div className="flex flex-col items-center h-[550px] overflow-hidden overflow-y-scroll">
+                      <h1 className=" text-2xl font-bold">{blog.data[index]!.title}</h1>
+                      <img className="h-96 m-5 rounded-xl" src={blog.data[index]!.photo}></img>
+                      <div className="text-center">{blog.data[index]!.description}</div>
+                      </div>
+                    </Modal>
+                    <div key={i} onClick={() => {setIndex(i), setModalActive2(true)}} className="flex flex-row items-center border-2 p-3 w-[80%] min-h-[350px] m-5 border-gray-800 rounded-3xl cursor-pointer">
+                      <div className="flex flex-col items-center h-72 w-[50%]">
+                        <img className="h-72 rounded-xl" src={item.photo}></img>
+                      </div>
+                      <div className="flex flex-col items-center ml-10 h-72 w-[50%]">
                         <h1 className=" text-2xl font-bold">{item.title}</h1>
-                        <div className=" text-center">{item.description}</div>
+                        <div className="text-center h-64 text-ellipsis overflow-hidden">{item.description}</div>
+                      </div>
                     </div>
-                    </div>
-                    </Link>
+                  </>   
                 ))}
         </div>
       </>
