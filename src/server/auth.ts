@@ -44,21 +44,22 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
-  callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
-  },
+  // callbacks: {
+  //   session: ({ session, user }) => ({
+  //     ...session,
+  //     user: {
+  //       ...session.user,
+  //       id: user.id,
+  //     },
+  //   }),
+  // },
   adapter: PrismaAdapter(prisma),
   providers: [
     VkProvider({
       clientId: env.VK_CLIENT_ID,
       clientSecret: env.VK_CLIENT_SECRET
-    })
+    }),
+    
     /**
      * ...add more providers here.
      *
@@ -69,6 +70,24 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
+  callbacks: {
+    session({ session, user }) {
+      console.log(JSON.stringify(session))
+      console.log(JSON.stringify(user))
+      if (session.user) {
+        session.user.id = user.id
+      }
+      
+      return session
+    },
+  },
+  pages: {
+    signIn: '/',
+    signOut: '/',
+    newUser: '/',
+  },
+  secret: env.NEXTAUTH_SECRET,
+  debug: true,
 };
 
 /**
