@@ -11,6 +11,8 @@ export const env = createEnv({
     SENDGRID_API_KEY: z.string(),
     MAILRU_CLIENT_ID: z.string(),
     MAILRU_SECRET: z.string(),
+    VK_CLIENT_ID: z.string(),
+    VK_CLIENT_SECRET: z.string(),
     NODE_ENV: z.enum(["development", "test", "production"]),
     NEXTAUTH_SECRET:
       process.env.NODE_ENV === "production"
@@ -47,6 +49,8 @@ export const env = createEnv({
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
     MAILRU_CLIENT_ID: process.env.MAILRU_CLIENT_ID,
     MAILRU_SECRET: process.env.MAILRU_SECRET,
+    VK_CLIENT_ID: process.env.VK_CLIENT_ID,
+    VK_CLIENT_SECRET: process.env.VK_CLIENT_SECRET,
     
   },
 });

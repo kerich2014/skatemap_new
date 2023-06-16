@@ -12,6 +12,7 @@ import Email, { EmailProvider } from "next-auth/providers/email";
 import { Role } from "@prisma/client";
 import { string } from "zod";
 import MailRuProvider from "next-auth/providers/mailru";
+import VkProvider from "next-auth/providers/vk";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -54,9 +55,9 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    MailRuProvider({
-      clientId: env.MAILRU_CLIENT_ID,
-      clientSecret: env.MAILRU_SECRET,
+    VkProvider({
+      clientId: env.VK_CLIENT_ID,
+      clientSecret: env.VK_CLIENT_SECRET
     })
     /**
      * ...add more providers here.

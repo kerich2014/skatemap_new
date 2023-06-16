@@ -118,18 +118,18 @@ const Map: NextPage = () => {
     noKeyboard: true,
     onDrop,
   });
-  const {data:session} = useSession()
-  const user = api.user.getById.useQuery({id: session?.user.id as string})
+  // const {data:session} = useSession()
+  // const user = api.user.getById.useQuery({id: session?.user.id as string})
 
   const AuthShowcase: React.FC = () => {
-    const { data: sessionData } = useSession();
+    // const { data: sessionData } = useSession();
   
     return (
         <button
           className="absolute top-[4%] right-[7%] border-2 border-white rounded-full bg-white/10 px-10 py-3 no-underline transition hover:border-black"
-          onClick={sessionData ? () => void signOut() : () => {void signIn()}}
+          onClick={void signIn()}
         >
-          {sessionData ? "Выйти" : "Войти"}
+          {"Войти"}
         </button>
     );
   }
@@ -141,17 +141,17 @@ return (
         </main> */}
       <div className="flex flex-grow">
         <h1 className="m-auto mt-[2%] text-5xl cursor-default">Skate Map</h1>
-        {session?.user && (<Link className="absolute top-[3%] right-[2%] border-2 h-12 w-12 border-gray-800 rounded-full m-auto" href={`/profiles/${session?.user.id}`}><img className="rounded-full h-11" src={session.user.image!}></img></Link>)}
+        {/* {session?.user && (<Link className="absolute top-[3%] right-[2%] border-2 h-12 w-12 border-gray-800 rounded-full m-auto" href={`/profiles/${session?.user.id}`}><img className="rounded-full h-11" src={session.user.image!}></img></Link>)} */}
         <AuthShowcase />
       </div>
       <nav className="flex items-center m-[2%]">
           <Link className="a" href = {`/`}>Карта спотов</Link>
-          {session?.user && (<Link className="a" href = {`/school`}>Школа трюков</Link>)}
-          {session?.user && (<Link className="a" href = {`/blog`}>Блог</Link>)}
+          {/* {session?.user && (<Link className="a" href = {`/school`}>Школа трюков</Link>)} */}
+          {/* {session?.user && (<Link className="a" href = {`/blog`}>Блог</Link>)} */}
           <a className="a">Правила скейтпарков</a>
       </nav>
       <div className="w-[96%] m-auto">
-      {(user.data?.role == 'admin' || user.data?.role == 'expert') && (<button className='addSpot' onClick={() => setModalActive(true)}>Добавить спот</button>)}
+      {/* {(user.data?.role == 'admin' || user.data?.role == 'expert') && (<button className='addSpot' onClick={() => setModalActive(true)}>Добавить спот</button>)} */}
       
         {/* <>{!isLoading && JSON.stringify(points)}</> */}
         {!isLoading && points ? <YaMap points={points} />: null}
