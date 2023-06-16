@@ -127,7 +127,7 @@ const Map: NextPage = () => {
     return (
         <button
           className="absolute top-[4%] right-[7%] border-2 border-white rounded-full bg-white/10 px-10 py-3 no-underline transition hover:border-black"
-          onClick={void signIn()}
+          onClick={() =>  signIn()}
         >
           {"Войти"}
         </button>
