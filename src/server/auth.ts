@@ -11,6 +11,9 @@ import { prisma } from "skatemap_new/server/db";
 import Email, { EmailProvider } from "next-auth/providers/email";
 import { Role } from "@prisma/client";
 import { string } from "zod";
+import CredentialsProvider from 'next-auth/providers/credentials'
+import { createUserSchema } from "./schema/user.schema";
+import { verify } from 'argon2'
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -43,28 +46,59 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    jwt: async ({ token, user }) => {
+      if (user) {
+        token.id = user.id
+        token.email = user.email
+        token.name = user.name
+      }
+
+      return token
+    },
+    session({ session, token }) {
+      if (session.user && token) {
+        session.user.name = token.name
+      }
+      return session
+    },
+  },
+  session: {
+    strategy: 'jwt',
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    Email({
-      server:{
-        host: process.env.EMAIL_SERVER || 'https://localhost:3000',
-        port: 587,
-        user: 'apikey',
-        pass: process.env.EMAIL_PASSWORD || '',
-      },
-      from: process.env.EMAIL_FROM || 'default@default.com',
-      ...(process.env.NODE_ENV != 'production' ?{sendVerificationRequest({url}) {
-        console.log('login link', url)
-      }}:{})
-    })
+  CredentialsProvider({
+        name: 'credentials',
+        credentials: {
+          username: { label: 'Username', type: 'text' },
+          password: { label: 'Password', type: 'password' },
+        },
+        authorize: async (credentials, request) => {
+          const creds = await createUserSchema.parseAsync(credentials)
+  
+          const user = await prisma.user.findFirst({
+            where: { name: creds.name },
+          })
+  
+          if (!user) {
+            return null
+          }
+  
+          const isValidPassword = await verify(user.password, creds.password)
+  
+          if (!isValidPassword) {
+            return null
+          }
+  
+          const result = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          }
+  
+          return result
+        },
+      }),
     /**
      * ...add more providers here.
      *
