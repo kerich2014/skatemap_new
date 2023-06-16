@@ -53,7 +53,7 @@ export const authOptions: NextAuthOptions = {
   //     },
   //   }),
   // },
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma),
   providers: [
     VkProvider({
       clientId: env.VK_CLIENT_ID,
@@ -74,9 +74,9 @@ export const authOptions: NextAuthOptions = {
     session({ session, user }) {
       console.log(JSON.stringify(session))
       console.log(JSON.stringify(user))
-      if (session.user) {
-        session.user.id = user.id
-      }
+      // if (session.user) {
+      //   session.user.id = user.id
+      // }
       
       return session
     },
