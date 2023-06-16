@@ -119,7 +119,7 @@ const Map: NextPage = () => {
     onDrop,
   });
   const {data:session} = useSession()
-  const user = api.user.getById.useQuery({id: session?.user.id as string})
+  const user = api.user.getById.useQuery({email: session?.user.email as string})
 
   const AuthShowcase: React.FC = () => {
     const { data: sessionData } = useSession();
@@ -136,6 +136,7 @@ const Map: NextPage = () => {
         </Link>
     );
   }
+  console.log(user.data?.role)
 return (
     <>
     {/* 

@@ -9,15 +9,15 @@ import {
 export const userRouter = createTRPCRouter({
 
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const result = await ctx.prisma.placemarks.findMany()
+    const result = await ctx.prisma.user.findMany()
     return result
   }),
 
-  getById: publicProcedure.input(z.object({id: z.string()})).query(async({
+  getById: publicProcedure.input(z.object({email: z.string()})).query(async({
     input, ctx}) => {
-        const {id} = input
-        if(id == "") return null
-        const user = await ctx.prisma.user.findUnique({where: {id}, select: 
+        const {email} = input
+        if(email == "") return null
+        const user = await ctx.prisma.user.findUnique({where: {email}, select: 
             {id: true, name: true, email: true, image: true, roleId: true, lvl: true}})
             if(user == null) return
             return{
@@ -27,7 +27,6 @@ export const userRouter = createTRPCRouter({
                 image: user.image,
                 role: user.roleId,
                 lvl: user.lvl,
-
             }
     }),
 

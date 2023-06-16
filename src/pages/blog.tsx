@@ -95,7 +95,7 @@ const uploadImage = async ({ imageFile }: Image) => {
         title: name.toString(),
         description: description.toString(),
         photo: imageUrl,
-        userId: session?.user.id!
+        userId: user.data?.email!
       })
   
       setName('');
@@ -104,7 +104,7 @@ const uploadImage = async ({ imageFile }: Image) => {
     else
     alert('Проверьте данные и повторите попытку')
   }
-  const user = api.user.getById.useQuery({id: session?.user.id as string})
+  const user = api.user.getById.useQuery({email: session?.user.email as string})
   console.log(user.data?.role)
   
 

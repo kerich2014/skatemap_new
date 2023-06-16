@@ -45,6 +45,15 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  // callbacks: {
+  //   session: ({ session, user }) => ({
+  //     ...session,
+  //     user: {
+  //       ...session.user,
+  //       id: user.id,
+  //     },
+  //   }),
+  // },
   callbacks: {
     jwt: async ({ token, user }) => {
       if (user) {
@@ -55,9 +64,10 @@ export const authOptions: NextAuthOptions = {
 
       return token
     },
-    session({ session, token }) {
-      if (session.user && token) {
-        session.user.name = token.name
+    session({ session, user }) {
+      if (session.user && user) {
+        session.user.id = user.id
+        session.user.name = user.name
       }
       return session
     },
@@ -99,6 +109,8 @@ export const authOptions: NextAuthOptions = {
           return result
         },
       }),
+
+      
     /**
      * ...add more providers here.
      *

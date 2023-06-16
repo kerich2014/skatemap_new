@@ -33,10 +33,10 @@ type Image = {
 // });
 
 
-const ProfilePage: NextPage<InferGetStaticPropsType <typeof getStaticProps>> = ({id}) => {
+const ProfilePage: NextPage<InferGetStaticPropsType <typeof getStaticProps>> = (id) => {
 
-  const {data: user, refetch} = api.user.getById.useQuery({id})
   const session = useSession()
+  const {data: user, refetch} = api.user.getById.useQuery({email: session.data?.user!.email!})
   const router = useRouter()
 
   let [progress, setProgress] = useState<number>(0);
@@ -44,7 +44,7 @@ const ProfilePage: NextPage<InferGetStaticPropsType <typeof getStaticProps>> = (
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [usEmail, setEmail] = useState("");
   const {mutate} = api.user.uploadData.useMutation()
   // const {mutate: uploadUSERmutate} = api.user.uploadData.useMutation()
 
@@ -136,11 +136,11 @@ const ProfilePage: NextPage<InferGetStaticPropsType <typeof getStaticProps>> = (
         }
       }
 
+      console.log(user?.email)
       
       
     return(
         <>
-       
          <div className="flex flex-grow">
         <h1 className="m-auto mt-[2%] text-5xl cursor-default">Skate Map</h1>
         {user == null && (<AuthShowcase/>)}
@@ -205,9 +205,9 @@ export const getStaticPaths: GetStaticPaths = () => {
   }
 }
 
-export async function getStaticProps(context: GetStaticPropsContext<{id: string}>) {
-  const id = context.params?.id
-  if(id == null){
+export async function getStaticProps(context: GetStaticPropsContext<{email: string}>) {
+  const email = context.params?.email
+  if(email == null){
     return{
       redirect: {
         destination: "/"
@@ -215,12 +215,12 @@ export async function getStaticProps(context: GetStaticPropsContext<{id: string}
     }
   }
   const ssg = ssgHelper()
-  await ssg.user.getById.prefetch({id})
+  await ssg.user.getById.prefetch({email})
 
   return{
     props: {
       trpcState: ssg.dehydrate(),
-      id,
+      email,
     }
   }
 }
