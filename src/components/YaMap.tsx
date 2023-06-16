@@ -58,7 +58,7 @@ export default function YaMap({points}: pointsType ) {
   }
   // console.log(JSON.stringify(collection, undefined, 4))
   const session = useSession()
-  const user = api.user.getById.useQuery({id: session.data?.user.id as string})
+  const user = api.user.getById.useQuery({email: session.data?.user.email as string})
   return (
     <YMaps
       query={{ apikey: "1a15248c-004a-4364-8c06-4c1e617f3000", lang: "ru_RU" }}
